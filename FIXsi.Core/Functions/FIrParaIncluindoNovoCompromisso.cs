@@ -19,8 +19,7 @@ public class FIrParaIncluindoNovoCompromisso
     public static void Start()
     {
         GoTo();
-        wait.s(1);
-        SendResponse.Success("Chegou ao [Incluir Novo Compromisso]");
+        SendResponse.Success("Chegou ao [Incluindo Novo Compromisso]");
     }
 
     private static void GoTo()
@@ -40,7 +39,7 @@ public class FIrParaIncluindoNovoCompromisso
         }
         #endregion
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 6; i++)
         {
             #region BUTTON INCLUIR/COMPROMISSOS
             try
@@ -49,8 +48,7 @@ public class FIrParaIncluindoNovoCompromisso
                 LogEntry.Info($"Procurando botão [Incluir]...");
                 btnIncluir = win.Elm["WINDOW", prop: "class=TfrmCompromisso"]["BUTTON", "Incluir*"].Find(3);
                 btnIncluir.WaitFor(10, x => x.WndContainer.IsVisible);
-                //btnIncluir.MouseClickD();
-                btnIncluir.Invoke();
+                btnIncluir.MouseClickD();
                 return;
             }
             catch (Exception)
@@ -62,8 +60,7 @@ public class FIrParaIncluindoNovoCompromisso
                     LogEntry.Info($"Procurando botão [Compromissos]...");
                     btnCompromissos = win.Elm["CLIENT", win.Name, navig: "la fi3 ch2 fi la fi3 ch2 fi la fi2"]["CLIENT", "Compromissos"].Find(3);
                     btnCompromissos.WaitFor(10, x => x.WndContainer.IsVisible);
-                    //btnCompromissos.MouseClick();
-                    btnCompromissos.Invoke();
+                    btnCompromissos.MouseClick();
                     continue;
                 }
                 catch

@@ -25,12 +25,12 @@ public partial class frm_Main : Form
     {
         try
         {
-            Screen screen = Screen.PrimaryScreen!; // Get the primary screen
-            Rectangle workingArea = screen.WorkingArea; // Get the working area of the screen
-            int x = (workingArea.Width - Width) / 2; // Center horizontally
-            int y = workingArea.Bottom - Height - 1; // Align to bottom
-            DesktopLocation = new Point(x, y); // Set the location
-            TopMost = true; // Make the form topmost
+            Screen screen = Screen.PrimaryScreen!; // Obtém a tela primária
+            Rectangle workingArea = screen.WorkingArea; // Obtém a área de trabalho
+            int x = (workingArea.Width - Width) / 2; // Centraliza horizontalmente
+            int y = workingArea.Bottom - Height - 1; // Centraliza verticalmente
+            DesktopLocation = new Point(x, y); // Define a posição do formulário
+            TopMost = true; // Coloca o formulário na frente de todos os outros
         }
         catch { }
     }
@@ -61,6 +61,12 @@ public partial class frm_Main : Form
                     break;
                 case "IncluindoNovoCompromisso":
                     FIncluindoNovoCompromisso.Start();
+                    break;
+                case "IrParaCadastroDeAndamentoProcessual":
+                    FIrParaCadastroDeAndamentoProcessual.Start();
+                    break;
+                case "CadastroDeAndamentoProcessual":
+                    FCadastroDeAndamentoProcessual.Start();
                     break;
                 default:
                     SendResponse.Error("Função não encontrada.", ErrorCode.FunctionNotFound);

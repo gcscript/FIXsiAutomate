@@ -6,36 +6,42 @@ using FIXsi.Shared;
 using System.Text.Json;
 
 namespace FIXsi.Core.Functions;
-public class FIncluindoNovoCompromisso
+public class FCadastroDeAndamentoProcessual
 {
     #region WINDOW
-    private const string winName = "Incluindo novo compromisso";
-    private const string winClass = "TfrmCadastroCompromisso";
+    private const string winName = "Cadastro de andamento processual";
+    private const string winClass = "TfrmProcAcompIncAlt";
     private const string winProcess = "CProc.exe";
     #endregion
 
     #region ELEMENTS
     private static wnd win;
+    private static elm? txt_Data;
     private static elm? cmb_Tipo;
     private static elm? cmb_Subtipo;
-    private static elm? txt_DtPublicacao;
     private static elm? txt_Descricao;
-    private static elm? chk_DiaInteiro;
-    private static elm? txt_HorarioInicio;
+    private static elm? txt_ObservacoesSobreOAndamento;
     private static elm? btn_SalvarFechar;
     #endregion
 
     #region MODELS
-    private static MIncluindoNovoCompromisso? model;
+    private static MCadastroDeAndamentoProcesssual? model;
     #endregion
 
     public static void Start()
     {
-        LogEntry.Info("Iniciando função [Incluindo Novo Compromisso]...");
+        LogEntry.Info("Iniciando função [Cadastro de andamento processual]...");
 
         CheckData();
         wait.s(1);
         SetElements();
+
+        if (!string.IsNullOrEmpty(model!.Data) && !string.IsNullOrWhiteSpace(model!.Data))
+        {
+            wait.s(1);
+            SetData();
+        }
+
         wait.s(1);
         SetTipo();
 
@@ -45,26 +51,23 @@ public class FIncluindoNovoCompromisso
             SetSubtipo();
         }
 
-        if (!string.IsNullOrEmpty(model!.DtPublicacao) && !string.IsNullOrWhiteSpace(model!.DtPublicacao))
+        if (!string.IsNullOrEmpty(model!.Descricao) && !string.IsNullOrWhiteSpace(model!.Descricao))
         {
             wait.s(1);
-            SetDtPublicacao();
+            SetDescricao();
         }
 
-        wait.s(1);
-        SetDescricao();
-
-        if (model!.DiaInteiro)
+        if (!string.IsNullOrEmpty(model!.ObservacoesSobreOAndamento) && !string.IsNullOrWhiteSpace(model!.ObservacoesSobreOAndamento))
         {
             wait.s(1);
-            SetDiaInteiro();
+            SetObservacoesSobreOAndamento();
         }
 
         wait.s(1);
         SaveAndClose();
 
         wait.s(1);
-        SendResponse.Success("Novo compromisso incluído com sucesso.");
+        SendResponse.Success("Andamento processual cadastrado com sucesso.");
     }
 
     private static void CheckData()
@@ -73,7 +76,7 @@ public class FIncluindoNovoCompromisso
 
         try
         {
-            model = JsonSerializer.Deserialize<MIncluindoNovoCompromisso>(Settings.RequestFileJsonString);
+            model = JsonSerializer.Deserialize<MCadastroDeAndamentoProcesssual>(Settings.RequestFileJsonString);
         }
         catch
         {
@@ -108,11 +111,23 @@ public class FIncluindoNovoCompromisso
         }
         #endregion
 
+        #region TXT DATA
+        try
+        {
+            LogEntry.Info("Procurando elemento [Data]...");
+            txt_Data = win.Elm["CLIENT", win.Name, navig: "ch2 fi5 la fi la fi ch11 fi3"].Find(3);
+        }
+        catch
+        {
+            SendResponse.Error("O elemento [Data] não foi encontrado.", ErrorCode.ElementNotFound);
+        }
+        #endregion
+
         #region CMD TIPO
         try
         {
             LogEntry.Info("Procurando elemento [Tipo]...");
-            cmb_Tipo = win.Elm["CLIENT", win.Name, navig: "ch3 fi3 ch3 fi3 ch6 fi3"].Find(3);
+            cmb_Tipo = win.Elm["CLIENT", win.Name, navig: "ch2 fi5 la fi la fi ch2 fi3"].Find(3);
         }
         catch
         {
@@ -124,7 +139,7 @@ public class FIncluindoNovoCompromisso
         try
         {
             LogEntry.Info("Procurando elemento [Subtipo]...");
-            cmb_Subtipo = win.Elm["CLIENT", win.Name, navig: "ch3 fi3 ch3 fi3 ch5 fi3"].Find(3);
+            cmb_Subtipo = win.Elm["CLIENT", win.Name, navig: "ch2 fi5 la fi la fi ch13 fi3"].Find(3);
         }
         catch
         {
@@ -132,23 +147,11 @@ public class FIncluindoNovoCompromisso
         }
         #endregion
 
-        #region TXT DTPUBLICACAO
-        try
-        {
-            LogEntry.Info(message: "Procurando elemento [Data de Publicação]...");
-            txt_DtPublicacao = win.Elm["CLIENT", win.Name, navig: "ch3 fi3 ch3 fi3 ch9 fi3"].Find(3);
-        }
-        catch
-        {
-            SendResponse.Error("O elemento [Data de Publicação] não foi encontrado.", ErrorCode.ElementNotFound);
-        }
-        #endregion
-
         #region TXT DESCRICAO
         try
         {
             LogEntry.Info("Procurando elemento [Descrição]...");
-            txt_Descricao = win.Elm["CLIENT", win.Name, navig: "ch3 fi3 ch3 fi3 ch2 fi3"].Find(3);
+            txt_Descricao = win.Elm["CLIENT", win.Name, navig: "ch2 fi5 la fi ch2 fi3 la fi"].Find(3);
         }
         catch
         {
@@ -156,27 +159,15 @@ public class FIncluindoNovoCompromisso
         }
         #endregion
 
-        #region CHK DIA INTEIRO
+        #region TXT OBSERVACOES SOBRE O ANDAMENTO
         try
         {
-            LogEntry.Info("Procurando elemento [Dia Inteiro]...");
-            chk_DiaInteiro = win.Elm["CLIENT", win.Name, navig: "ch3 fi3 la fi ch8 fi"].Find(3);
+            LogEntry.Info("Procurando elemento [Observacoes sobre o andamento]...");
+            txt_ObservacoesSobreOAndamento = win.Elm["CLIENT", win.Name, navig: "ch2 fi5 la fi ch2 fi ch3 fi la fi"].Find(3);
         }
         catch
         {
-            SendResponse.Error("O elemento [Dia Inteiro] não foi encontrado.", ErrorCode.ElementNotFound);
-        }
-        #endregion
-
-        #region TXT HORARIO INICIO
-        try
-        {
-            LogEntry.Info("Procurando elemento [Horário de Início]...");
-            txt_HorarioInicio = win.Elm["CLIENT", win.Name, navig: "ch3 ch1 ch1 ch1 ch4 ch1 ch9 ch1 ch4 ch1 ch1 ch1"].Find(3);
-        }
-        catch
-        {
-            SendResponse.Error("O elemento [Horário de Início] não foi encontrado.", ErrorCode.ElementNotFound);
+            SendResponse.Error("O elemento [Observacoes sobre o andamento] não foi encontrado.", ErrorCode.ElementNotFound);
         }
         #endregion
 
@@ -184,7 +175,7 @@ public class FIncluindoNovoCompromisso
         try
         {
             LogEntry.Info("Procurando botão [Salvar e Fechar]...");
-            btn_SalvarFechar = win.Elm["BUTTON", "Salvar e Fechar", "class=TcxButton"].Find(3);
+            btn_SalvarFechar = win.Elm["BUTTON", "Salvar e Fechar", "class=TPLKButton"].Find(3);
         }
         catch
         {
@@ -192,6 +183,26 @@ public class FIncluindoNovoCompromisso
         }
         #endregion
 
+    }
+
+    private static void SetData()
+    {
+        LogEntry.Info("Definindo valor do elemento [Data]...");
+        MElementSettings es = new()
+        {
+            ElementName = "Data",
+            ElementValue = model!.Data!,
+            CheckIfItWasSuccessful = true,
+            ClearContent = true,
+            ClickBefore = true,
+            SetFocusAndSelect = true,
+            SetValueMode = EElementValueMode.Clipboard
+        };
+
+        if (!LibreAutomate.SetValueOnElement(win, txt_Data!, es))
+        {
+            SendResponse.Error("Não foi possível definir o valor do elemento [Data].", "E978903");
+        }
     }
 
     private static void SetTipo()
@@ -212,7 +223,7 @@ public class FIncluindoNovoCompromisso
 
         if (!LibreAutomate.ElementSetTextComboboxMode1(win, cmb_Tipo!, es))
         {
-            SendResponse.Error("Não foi possível definir o valor do elemento [Tipo].", "E745334");
+            SendResponse.Error("Não foi possível definir o valor do elemento [Tipo].", "E642574");
         }
     }
 
@@ -234,27 +245,7 @@ public class FIncluindoNovoCompromisso
 
         if (!LibreAutomate.ElementSetTextComboboxMode1(win, cmb_Subtipo!, es))
         {
-            SendResponse.Error("Não foi possível definir o valor do elemento [Subtipo].", "E901750");
-        }
-    }
-
-    private static void SetDtPublicacao()
-    {
-        LogEntry.Info("Definindo valor do elemento [DtPublicacao]...");
-        MElementSettings es = new()
-        {
-            ElementName = "DtPublicacao",
-            ElementValue = model!.DtPublicacao!,
-            CheckIfItWasSuccessful = true,
-            ClearContent = true,
-            ClickBefore = true,
-            SetFocusAndSelect = true,
-            SetValueMode = EElementValueMode.Clipboard
-        };
-
-        if (!LibreAutomate.SetValueOnElement(win, txt_DtPublicacao!, es))
-        {
-            SendResponse.Error("Não foi possível definir o valor do elemento [DtPublicacao].", "E219303");
+            SendResponse.Error("Não foi possível definir o valor do elemento [Subtipo].", "E930857");
         }
     }
 
@@ -274,35 +265,28 @@ public class FIncluindoNovoCompromisso
 
         if (!LibreAutomate.SetValueOnElement(win, txt_Descricao!, es))
         {
-            SendResponse.Error("Não foi possível definir o valor do elemento [Descricao].", "E219303");
+            SendResponse.Error("Não foi possível definir o valor do elemento [Descricao].", "E582400");
         }
     }
 
-    private static void SetDiaInteiro()
+    private static void SetObservacoesSobreOAndamento()
     {
-        for (int i = 0; i < 6; i++)
+        LogEntry.Info("Definindo valor do elemento [Observacoes sobre o andamento]...");
+        MElementSettings es = new()
         {
-            LogEntry.Info("Definindo valor do elemento [Dia Inteiro]...");
-            try
-            {
-                if (!txt_HorarioInicio!.IsInvisible)
-                {
-                    chk_DiaInteiro!.WaitFor(5, x => x.WndContainer.IsVisible);
-                    chk_DiaInteiro.MouseClick();
-                }
+            ElementName = "Observacoes sobre o andamento",
+            ElementValue = model!.ObservacoesSobreOAndamento!,
+            CheckIfItWasSuccessful = true,
+            ClearContent = true,
+            ClickBefore = true,
+            SetFocusAndSelect = true,
+            SetValueMode = EElementValueMode.Clipboard
+        };
 
-                txt_HorarioInicio.WaitFor(3, x => !x.WndContainer.IsVisible);
-
-                return;
-            }
-            catch
-            {
-                LogEntry.Error("Erro ao definir valor do elemento [Dia Inteiro]!");
-                continue;
-            }
+        if (!LibreAutomate.SetValueOnElement(win, txt_ObservacoesSobreOAndamento!, es))
+        {
+            SendResponse.Error("Não foi possível definir o valor do elemento [Observacoes sobre o andamento].", "E560168");
         }
-
-        SendResponse.Error("Não foi possível definir o valor do elemento [Dia Inteiro].", "E605135");
     }
 
     private static void SaveAndClose()
@@ -342,6 +326,6 @@ public class FIncluindoNovoCompromisso
             }
         }
 
-        SendResponse.Error($"Não foi possível salvar o novo compromisso.", "E351508");
+        SendResponse.Error($"Não foi possível salvar o novo compromisso.", "E796097");
     }
 }

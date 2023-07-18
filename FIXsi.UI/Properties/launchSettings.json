@@ -1,7 +1,8 @@
 {
   "profiles": {
     "FIXsi.UI": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "\"12345\" \"Publicacao\" \"PesquisarProcesso\""
     }
   }
 }
